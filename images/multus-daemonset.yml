@@ -74,22 +74,38 @@ metadata:
     app: multus
 data:
   70-multus.conf: |
-    {
+    '{
       "name": "multus-cni-network",
       "type": "multus",
       "logFile": "/var/log/multus.log",
       "logLevel": "debug",
+      "capabilities": {
+        "portMappings": true
+      },
       "delegates": [
         {
-          "type": "flannel",
-          "name": "flannel.1",
-          "delegate": {
-            "isDefaultGateway": true
-          }
+          "cniVersion": "0.3.1",
+          "name": "default-cni-network",
+          "plugins": [
+            {
+              "type": "flannel",
+              "name": "flannel.1",
+                "delegate": {
+                  "isDefaultGateway": true,
+                  "hairpinMode": true
+                }
+              },
+              {
+                "type": "portmap",
+                "capabilities": {
+                  "portMappings": true
+                }
+              }
+          ]
         }
       ],
       "kubeconfig": "/etc/cni/net.d/multus.d/multus.kubeconfig"
-    }
+    }'
 # -------------- for openshift.
 # "delegates": [{
 #   "type": "openshift-sdn",
